@@ -43,7 +43,7 @@ library strings {
         uint _ptr;
     }
 
-    function copyMemory(uint dest, uint src, uint len) private pure {
+    function internalCopyMemory(uint dest, uint src, uint len) private pure {
         // Copy word-length chunks while possible
         for(; len >= 32; len -= 32) {
             assembly {
@@ -146,7 +146,7 @@ library strings {
         uint retptr;
         assembly { retptr := add(ret, 32) }
 
-        copyMemory(retptr, self._ptr, self._len);
+        internalCopyMemory(retptr, self._ptr, self._len);
         return ret;
     }
 
@@ -689,8 +689,8 @@ library strings {
         string memory ret = new string(self._len + other._len);
         uint retptr;
         assembly { retptr := add(ret, 32) }
-        copyMemory(retptr, self._ptr, self._len);
-        copyMemory(retptr + self._len, other._ptr, other._len);
+        internalCopyMemory(retptr, self._ptr, self._len);
+        internalCopyMemory(retptr + self._len, other._ptr, other._len);
         return ret;
     }
 
@@ -715,10 +715,10 @@ library strings {
         assembly { retptr := add(ret, 32) }
 
         for(uint i = 0; i < parts.length; i++) {
-            copyMemory(retptr, parts[i]._ptr, parts[i]._len);
+            internalCopyMemory(retptr, parts[i]._ptr, parts[i]._len);
             retptr += parts[i]._len;
             if (i < parts.length - 1) {
-                copyMemory(retptr, self._ptr, self._len);
+                internalCopyMemory(retptr, self._ptr, self._len);
                 retptr += self._len;
             }
         }
