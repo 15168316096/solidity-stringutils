@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: UNLICENSED
 /*
  * @title String & slice utility library for Solidity contracts.
  * @author Nick Johnson <arachnid@notdot.net>
@@ -42,7 +43,7 @@ library strings {
         uint _ptr;
     }
 
-    function memcpy(uint dest, uint src, uint len) private pure {
+    function copyMemory(uint dest, uint src, uint len) private pure {
         // Copy word-length chunks while possible
         for(; len >= 32; len -= 32) {
             assembly {
@@ -145,7 +146,7 @@ library strings {
         uint retptr;
         assembly { retptr := add(ret, 32) }
 
-        memcpy(retptr, self._ptr, self._len);
+        copyMemory(retptr, self._ptr, self._len);
         return ret;
     }
 
@@ -688,8 +689,8 @@ library strings {
         string memory ret = new string(self._len + other._len);
         uint retptr;
         assembly { retptr := add(ret, 32) }
-        memcpy(retptr, self._ptr, self._len);
-        memcpy(retptr + self._len, other._ptr, other._len);
+        copyMemory(retptr, self._ptr, self._len);
+        copyMemory(retptr + self._len, other._ptr, other._len);
         return ret;
     }
 
@@ -714,10 +715,10 @@ library strings {
         assembly { retptr := add(ret, 32) }
 
         for(uint i = 0; i < parts.length; i++) {
-            memcpy(retptr, parts[i]._ptr, parts[i]._len);
+            copyMemory(retptr, parts[i]._ptr, parts[i]._len);
             retptr += parts[i]._len;
             if (i < parts.length - 1) {
-                memcpy(retptr, self._ptr, self._len);
+                copyMemory(retptr, self._ptr, self._len);
                 retptr += self._len;
             }
         }
